@@ -1,0 +1,41 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/rocks/protos/Rock.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation -0.4975667039416952 0.37076887296156336 0.7841924623275907 2.0839298603175602
+  position 0.08234944826042234 -1.1380729530848313 3.0237770135885826
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+}
+E-puck {
+  controller "oar_py"
+}
+Rock {
+  translation 0.27 -0.32 0
+}
+Rock {
+  translation -0.206798 0.28 0
+  rotation 0 0 1 -2.6179953071795863
+  name "rock(1)"
+}
+Rock {
+  translation -0.386958 0.0720618 -1.2292e-06
+  rotation 0.9659260992006155 0.2588180265806127 -4.631520475657177e-09 3.14159
+  name "rock(4)"
+}
+Rock {
+  translation 0.257913 0.375099 0
+  rotation 0 0 1 -2.6179953071795863
+  name "rock(5)"
+}
