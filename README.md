@@ -1,36 +1,30 @@
-# Obstacle Avoidance Robot
+# Obstacle Avoidance Robot Simulation
 
-This repository contains the simulation of an **Obstacle Avoidance Robot** that detects and avoids obstacles using basic proximity sensors. The robot uses a simple reactive strategy—if an obstacle is detected, it changes direction to avoid it. No advanced algorithms or PID controllers are used in this implementation.
+This repository contains the simulation of an **Obstacle Avoidance Robot**. The robot is based on the **e-puck** model and uses proximity sensors to detect and avoid obstacles in its path. It moves in a different direction whenever an obstacle is detected, making decisions based on simple sensor readings. The robot's motion control does not use any algorithms or PID controllers—just basic logic based on obstacle detection.
 
 ## Demo
-
-Click the image below to watch a demo video of the robot in action:
+Click the image below to watch a demo of the robot in action:
 
 [![Watch the video](https://img.youtube.com/vi/O75YmInmh-U/0.jpg)](https://www.youtube.com/watch?v=O75YmInmh-U)
 
 ## How It Works
 
 ### Robot Design
+The **e-puck** robot is equipped with six proximity sensors, which are used to detect obstacles around the robot. The robot’s movements are controlled by two independent wheel motors, allowing it to move forward or change direction when an obstacle is detected.
 
-- **Proximity Sensors**: The robot is equipped with six proximity sensors (`ps0`, `ps1`, `ps2`, `ps5`, `ps6`, `ps7`) that help it detect obstacles in its surroundings. These sensors return a value proportional to the distance between the sensor and an object.
-- **Motors**: The robot uses two independent motors to control its left and right wheels. By adjusting the velocity of each wheel, the robot can move forward or turn based on sensor input.
+- **Proximity Sensors**: Six proximity sensors (`ps0`, `ps1`, `ps2`, `ps5`, `ps6`, and `ps7`) detect nearby obstacles. These sensors provide readings that help the robot determine if it should continue moving forward or change its direction.
+- **Motors**: The left and right wheel motors control the robot’s movement. These motors are programmed to either drive forward or reverse depending on the sensor readings.
 
-### Obstacle Avoidance Strategy
-
-- **Basic Movement**: The robot moves forward at a constant speed unless an obstacle is detected.
-- **Obstacle Detection**: When any of the proximity sensors detect an object within a certain threshold (sensor value greater than 100), the robot reacts by changing its direction.
-- **Reaction to Obstacles**: If an obstacle is detected by one of the sensors, the robot slows down one of its wheels (by reversing its speed) to turn away from the obstacle.
-
-### Control Logic
-
-1. The robot starts by moving forward with both wheels at maximum speed.
-2. As it moves, the proximity sensors continuously check for obstacles.
-3. If a sensor detects an obstacle (sensor reading > 100), the robot slows down or reverses one of its wheels to change direction and avoid the obstacle.
-4. Once the obstacle is cleared, the robot resumes its forward motion.
+### Obstacle Avoidance Logic
+- The robot moves forward by default until one or more sensors detect an obstacle in its path.
+- When an obstacle is detected (sensor value above a threshold), the robot reverses its direction and continues to explore its surroundings.
+- The control strategy is simple: If any sensor detects a nearby obstacle (reading > 100), the robot slows down or reverses to avoid the obstacle.
 
 ## Code Explanation
 
-Here is the controller code for the robot:
+The controller code is written in Python using the Webots robotics simulator. Here’s an overview of the core logic:
+
+### Main Controller Code
 
 ```python
 """oar_py controller."""
@@ -42,7 +36,6 @@ MAX_SPEED = 6.28
 
 def run_robot(robot):
 
-    # Initialize the motors
     left_motor = robot.getDevice('left wheel motor')
     right_motor = robot.getDevice('right wheel motor')
     
@@ -52,28 +45,25 @@ def run_robot(robot):
     left_motor.setVelocity(0.0)
     right_motor.setVelocity(0.0)
     
-    # Initialize the proximity sensors
+    # Enable proximity sensors
     list_ps = []
     for ind in [0, 1, 2, 5, 6, 7]:
         sensor_name = 'ps' + str(ind)
         list_ps.append(robot.getDevice(sensor_name))
         list_ps[-1].enable(TIMESTEP)
     
-    # Main loop
     while robot.step(TIMESTEP) != -1:
     
-        # Default speed for both motors
         left_speed = MAX_SPEED
         right_speed = MAX_SPEED
         
-        # Check proximity sensor values
+        # Check each proximity sensor's value
         for ps in list_ps:
             ps_val = ps.getValue()
-            if ps_val > 100:
-                # If an obstacle is detected, reverse the left motor speed
-                left_speed = -MAX_SPEED
-   
-        # Set the motor speeds
+            if ps_val > 100:  # If obstacle detected
+                left_speed = -MAX_SPEED  # Reverse direction
+                
+        # Set the motor velocities based on sensor values
         left_motor.setVelocity(left_speed)
         right_motor.setVelocity(right_speed)
 
@@ -82,41 +72,36 @@ if __name__ == "__main__":
     run_robot(my_robot)
 ```
 
-### Key Points:
+### Key Points of the Code:
+- **Proximity Sensors**: The proximity sensors (`ps0`, `ps1`, `ps2`, `ps5`, `ps6`, and `ps7`) are enabled and used to detect obstacles. If any sensor detects a nearby object (reading > 100), it triggers a change in direction.
+- **Movement Control**: By default, the robot moves forward with maximum speed. When an obstacle is detected, the left motor speed is set to a negative value, causing the robot to reverse and adjust its path.
+- **Loop Execution**: The `while` loop continuously checks sensor readings and adjusts motor velocities accordingly, allowing the robot to avoid obstacles dynamically.
 
-- **Motor Control**: The left and right motors are controlled independently to allow the robot to move forward or turn. The motors are initialized with a speed of 0, and the maximum speed is set to `6.28` (the maximum velocity in radians per second).
-  
-- **Proximity Sensors**: The robot uses 6 proximity sensors (`ps0`, `ps1`, `ps2`, `ps5`, `ps6`, `ps7`), which detect nearby objects. These sensors provide values that increase as the robot approaches an obstacle.
-
-- **Obstacle Avoidance Logic**: The robot checks the proximity sensor values in every timestep. If any of the sensors detect an obstacle (i.e., the sensor value exceeds 100), the robot adjusts its movement by reversing the left wheel, causing the robot to turn and avoid the obstacle.
-
-- **Simple Reactive Control**: There are no complex algorithms like PID or A* in this robot. The control logic is purely reactive: the robot changes its movement only when an obstacle is detected.
+---
 
 ## Installation and Usage
 
 ### Requirements
-
-- **Webots**: Install the Webots robotics simulator from [here](https://cyberbotics.com/).
-- **Python**: Make sure you have Python installed to run the robot controller.
+- **Webots**: You will need the Webots robotics simulator to run this project. Download it from [here](https://cyberbotics.com/).
+- **Python**: Ensure that Python is installed, as the controller code is written in Python.
 
 ### Steps to Run
-
 1. Clone this repository to your local machine:
    ```bash
    git clone https://github.com/Mummanajagadeesh/obstacle-avoidance-robot-w.git
    cd obstacle-avoidance-robot-w
    ```
 2. Open Webots and load the **obstacle_avoidance_robot.wbt** world file in the simulation folder.
-3. Run the simulation and observe the robot's behavior as it avoids obstacles.
+3. Run the simulation to watch the e-puck robot avoid obstacles in real-time.
+
+---
 
 ## Future Enhancements
+- **Path Planning Algorithms**: Future versions of this robot could incorporate path-planning algorithms (e.g., A*, Dijkstra) to navigate more efficiently in environments with obstacles.
+- **PID Control**: Implementing a PID controller would enable smoother movement and finer control when the robot adjusts its path.
+- **Obstacle Categorization**: Add more complex behavior by allowing the robot to classify different types of obstacles and respond differently (e.g., stopping in front of some objects and avoiding others).
 
-- **Advanced Algorithms**: Implementing more advanced algorithms like A* or potential field-based navigation to improve obstacle avoidance.
-- **PID Control**: Adding a PID controller for smoother and more precise obstacle avoidance.
-- **Multiple Robots**: Testing the behavior of multiple robots avoiding obstacles in the same environment.
-  
 ---
 
 ## License
-
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
